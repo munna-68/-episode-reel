@@ -1,0 +1,33 @@
+{
+  "domain": "valleygirlkitchen.com",
+  "urls": [[0, ""], ["recipe", "/recipes/maple-pumpkin-sweet-buns"], ["library", "/recipes"], ["shop", "/shop"], ["dash", "/dashboard"]],
+  "xf": 0.4,
+  "zooms": [
+    {"from": "hover-0.2", "to": "click+0.55", "zoom": 1.55},
+    {"from": "scale+0.1", "to": "navRecipes-0.1", "zoom": 1.7},
+    {"from": "type-0.6", "to": "type+2.4", "zoom": 2.0},
+    {"from": "hoverImg-0.1", "to": "add+1.3", "zoom": 1.45}
+  ],
+  "cards": [
+    {"from": 0.25, "to": "line:03-0.3", "chip": "EPISODE 1", "sub": "Valley Girl Kitchen"},
+    {"from": "line:04", "to": "line:05-0.25", "chip": "ONE HOME", "sub": "that she owns"},
+    {"from": "line:05", "to": "recipe+0.3", "chip": "THE RECIPE", "sub": "no app, no login"},
+    {"from": "recipe+0.3", "to": "navRecipes+1.0", "chip": "BIGGER BATCH", "sub": "every amount updates"},
+    {"from": "navRecipes+1.0", "to": "navShop+1.0", "chip": "THE RECIPE BOX", "sub": "searchable"},
+    {"from": "navShop+1.0", "to": "navDash+1.0", "chip": "SHOP & DROPS", "sub": "one tap from any recipe"},
+    {"from": "navDash+1.0", "to": "cut", "chip": "DASHBOARD", "sub": "demo numbers"},
+    {"from": "cut+0.1", "to": "cut+2.6", "chip": "ON A PHONE", "sub": "same site, same feel"}
+  ],
+  "scatter": {"from": "line:03", "merge": "line:04", "pill": "🔗 one link in bio", "tiles": ["Recipes", "Drops", "Shop"], "small": "another platform"},
+  "cta": {"at": "line:12", "html": "Drop a business <em>below</em><br>for episode 2 👇"},
+  "stitch": {"k0": 70, "k1": 83, "a": 69, "b0": 81, "b1": 83, "ox": 330, "oy": 458, "zmax": 12},
+  "theme": {},
+  "music": {"style": "deep", "bpm": 104},
+  "sfx": {
+    "transitions": ["click", "navRecipes", "navShop", "navDash"],
+    "boom": 2.3,
+    "keys": [{"at": "type+0.02", "n": 5, "gap": 0.143}],
+    "thock": ["add+0.05"],
+    "ticks": [{"at": "navDash+1.5", "n": 16}]
+  }
+}

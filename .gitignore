@@ -1,0 +1,11 @@
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+# per-episode output never belongs in the skill repo
+footage/
+out/
+*.mp4
+*.wav
+*.mp3
+.mcp.json

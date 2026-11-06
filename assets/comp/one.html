@@ -1,0 +1,161 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Episode reel compositor (1080x1920). Frame-pure: seek(k) draws output frame k from comp/one.js (tools/build_edit.py).
+     Layout is the series look approved in episode 1: a fixed 16:10 browser window (never moves or resizes), a top zone
+     for one chip + script subtitle at a time, word-by-word captions under the window, full-bleed phone at the end.
+     Colours and fonts come from EDIT.theme (edit.json "theme"), so each episode can wear the client's brand. -->
+<script src="one.js"></script>
+<script>
+  const TH = Object.assign({
+    fonts: 'https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Yellowtail&display=block',
+    bgInner: '#3b2519', bgMid: '#24160f', bgOuter: '#140b07',      // radial studio background
+    accent: '#d6a56c', accentInk: '#1d120c',                       // chip fill + chip text, active caption word, script subtitle
+    tile: '#f2ebe4', tileInk: '#24160f', tileSmall: '#4a2e20', lock: '#8f3418',
+    capFont: 'Archivo', capStretch: '125%', capWeight: 900,        // captions + chips (wide display caps)
+    scriptFont: 'Yellowtail',                                       // subtitle under the chip
+    bar: '#efe7df', barDots: '#d4c6b8', urlBg: '#e2d7cc', urlInk: '#6b5446', viewBg: '#1d120c',
+  }, (typeof EDIT !== 'undefined' && EDIT.theme) || {});
+  document.write(`<link href="${TH.fonts}" rel="stylesheet">`);
+  const r = document.documentElement.style;
+  for (const [k, v] of Object.entries(TH)) r.setProperty('--' + k, String(v));
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{font-family:var(--capFont),sans-serif;background:var(--bgOuter)}
+#stage{position:absolute;inset:0;background:radial-gradient(120% 70% at 50% 46%,var(--bgInner) 0%,var(--bgMid) 55%,var(--bgOuter) 100%)}
+.grain{position:absolute;inset:0;opacity:.06;mix-blend-mode:screen;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='4'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>")}
+/* the desktop window: one size, one place, the whole video */
+#win{position:absolute;left:20px;top:560px;width:1040px;border-radius:22px;overflow:hidden;box-shadow:0 44px 100px rgba(0,0,0,.55),0 0 0 1.5px rgba(255,255,255,.07)}
+#bar{height:34px;background:var(--bar);display:flex;gap:8px;align-items:center;padding:0 16px}
+#bar i{width:11px;height:11px;border-radius:50%;background:var(--barDots)}
+#url{margin-left:18px;flex:1;max-width:520px;height:22px;border-radius:11px;background:var(--urlBg);font-family:system-ui,sans-serif;font-size:13px;color:var(--urlInk);display:flex;align-items:center;padding-left:14px;font-weight:500}
+#view{position:relative;width:1040px;height:650px;overflow:hidden;background:var(--viewBg)}
+#vimg,#aimg{position:absolute;left:0;top:0;transform-origin:0 0}
+#aimg{width:1040px;display:none}
+#cur{position:absolute;left:0;top:0;width:30px;height:30px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.45));transform-origin:6px 4px}
+#ripple{position:absolute;border-radius:50%;border:4px solid var(--accent);opacity:0}
+/* phone, full bleed */
+#bleed{position:absolute;inset:0;overflow:hidden;opacity:0}
+#bimg{position:absolute;left:0;top:0;width:1080px;height:1919px}
+/* top zone: one chip + script subtitle */
+.card{position:absolute;left:0;right:0;top:300px;text-align:center}
+.card b{display:inline-block;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:28px;letter-spacing:.01em;padding:11px 22px 12px;border-radius:999px;background:var(--accent);color:var(--accentInk)}
+.card .s{font-family:var(--scriptFont),cursive;font-size:60px;color:var(--accent);margin-top:12px;line-height:1.1}
+/* problem graphic: one link in bio -> separate platforms -> merge */
+.tile{position:absolute;top:350px;height:140px;border-radius:28px;background:var(--tile);color:var(--tileInk);display:flex;flex-direction:column;justify-content:center;align-items:center;font-stretch:118%;font-weight:900;font-size:32px;box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.tile small{font-stretch:100%;font-weight:600;font-size:19px;color:var(--tileSmall);margin-top:6px}
+.pill{position:absolute;left:50%;top:240px;padding:16px 30px;border-radius:999px;background:#fff;color:var(--tileInk);font-weight:800;font-size:30px;white-space:nowrap;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.lock{position:absolute;padding:8px 16px;border-radius:999px;background:var(--lock);color:#fff;font-weight:800;font-size:20px;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+/* captions */
+#cap{position:absolute;left:70px;right:130px;top:1290px;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;line-height:1.04}
+#cap span{display:inline-block;margin:0 19px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:66px;color:#fff;text-transform:uppercase;text-shadow:0 4px 0 rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.5);transform-origin:50% 70%}
+#cap span.on{color:var(--accent)}
+#cap.band{padding:16px 6px;border-radius:40px;background:color-mix(in srgb,var(--bgOuter) 82%,transparent)}
+.cta{position:absolute;left:50px;right:140px;top:250px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:58px;color:#fff;text-align:center;line-height:1.1;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.cta em{font-style:normal;color:var(--accent)}
+.ctaband{position:absolute;left:0;right:0;top:0;height:640px;background:linear-gradient(color-mix(in srgb,var(--bgOuter) 92%,transparent),color-mix(in srgb,var(--bgOuter) 88%,transparent) 62%,transparent)}
+</style></head>
+<body>
+<div id="stage">
+  <div id="win"><div id="bar"><i></i><i></i><i></i><div id="url"></div></div><div id="view"><img id="vimg"><img id="aimg"><svg id="cur" viewBox="0 0 24 24"><path d="M4 2.5l15.5 9.2-6.7 1.6-3.6 6.2z" fill="#fff" stroke="#1d120c" stroke-width="1.6" stroke-linejoin="round"/></svg><div id="ripple"></div></div></div>
+  <div id="bleed"><img id="bimg"></div>
+  <div id="top"></div>
+  <div id="cap"></div>
+  <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const out = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
+const io = t => { t = clamp(t, 0, 1); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const back = t => { t = clamp(t, 0, 1); const c = 1.5; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };
+const pad = n => String(n).padStart(5, '0');
+const VW = 1040, VH = 650;
+const DESK = '../footage/desk30/f', MOB = '../footage/mob30/f';
+
+async function setImg(img, src) { if (img.getAttribute('src') !== src) { img.src = src; await img.decode().catch(() => {}); } }
+
+async function seek(k) {
+  const t = k / EDIT.fps;
+  // ---- desktop window (fixed) ----
+  const dk = Math.min(k, EDIT.desk.frames - 1), c = EDIT.cam[dk];
+  const showDesk = t < EDIT.cut;
+  $('#win').style.display = showDesk ? 'block' : 'none';
+  if (showDesk) {
+    const [z, x0, y0, cx, cy, since] = c, s = VW / EDIT.desk.w * z;
+    const img = $('#vimg'); img.style.width = (EDIT.desk.w * s) + 'px';
+    img.style.transform = `translate(${-x0 * s}px,${-y0 * s}px)`;
+    // optional stitch over a glitchy stretch of the take: frame `a` zooms about (ox,oy) and dissolves into frames b0..b1
+    const S = EDIT.stitch, ai = $('#aimg');
+    if (S && k >= S.k0 && k < S.k1) {
+      const u = (k - S.k0) / (S.k1 - S.k0), zA = Math.pow(S.zmax || 1, u * u);
+      const bk = Math.round(S.b0 + (S.b1 - S.b0) * u), ox = (S.ox || 0) * s, oy = (S.oy || 0) * s;
+      await setImg(img, `${DESK}${pad(bk + 1)}.jpg`);
+      await setImg(ai, `${DESK}${pad(S.a + 1)}.jpg`);
+      ai.style.display = 'block'; ai.style.transform = `translate(${ox}px,${oy}px) scale(${zA}) translate(${-ox}px,${-oy}px)`;
+      ai.style.opacity = 1 - io(u);
+    } else { ai.style.display = 'none'; await setImg(img, `${DESK}${pad(dk + 1)}.jpg`); }
+    const px = (cx - x0) * s, py = (cy - y0) * s;
+    const press = since < 99 ? Math.sin(Math.PI * clamp(since / 9, 0, 1)) : 0;
+    $('#cur').style.transform = `translate(${px - 6}px,${py - 4}px) scale(${(0.9 + 0.12 * z) * (1 - 0.18 * press)})`;
+    const rip = $('#ripple'), u = since / 36, R = 12 + 54 * out(u);
+    rip.style.opacity = since < 36 ? 0.9 * (1 - u) : 0;
+    rip.style.width = rip.style.height = 2 * R + 'px'; rip.style.left = (px - R) + 'px'; rip.style.top = (py - R) + 'px';
+    let slug = ''; for (const [t0, u2] of EDIT.urls) if (t >= t0) slug = u2;
+    $('#url').textContent = EDIT.domain + slug;
+  }
+  // ---- phone (crossfades in, then full screen) ----
+  const mt = t - EDIT.mob0, bl = $('#bleed');
+  if (mt >= 0) {
+    const mk = clamp(Math.round(mt * EDIT.fps), 0, EDIT.mob.frames - 1);
+    await setImg($('#bimg'), `${MOB}${pad(mk + 1)}.jpg`);
+    bl.style.opacity = io(mt / EDIT.xf);
+    bl.style.display = 'block';
+  } else bl.style.display = 'none';
+  // ---- top zone ----
+  let h = '';
+  for (const [a, b, chip, sub] of EDIT.cards) {
+    if (t < a - 0.01 || t > b + 0.3) continue;
+    const u = out((t - a) / 0.35) * (1 - clamp((t - b) / 0.3, 0, 1));
+    if (mt >= 0) h += `<div class="ctaband" style="opacity:${u * io(mt / EDIT.xf)}"></div>`;   // keep chips readable over the phone
+    h += `<div class="card" style="opacity:${u};transform:translateY(${16 * (1 - u)}px)"><b>${chip}</b><div class="s">${sub}</div></div>`;
+  }
+  const SC = EDIT.scatter;
+  if (SC && t >= SC.t0 && t < SC.merge + 0.6) {
+    const P = (d, x) => clamp((t - d) / x, 0, 1);
+    const pin = back(P(SC.t0, 0.4)), fan = P(SC.t0 + 0.35, 0.6), m = io(P(SC.merge - 0.1, 0.55));
+    if (SC.pill) h += `<div class="pill" style="transform:translateX(-50%) scale(${pin * (1 - m)});opacity:${1 - m}">${SC.pill}</div>`;
+    const N = SC.tiles.length, sp = N <= 3 ? 270 : 200, tw = N <= 3 ? 230 : 180;
+    SC.tiles.forEach((name, i) => {
+      const x = (i - (N - 1) / 2) * sp, r = [-5, 3, 6, -4][i % 4];
+      const v = back(clamp(fan * 1.4 - i * 0.2, 0, 1)), xx = x * (1 - m);
+      h += `<div class="tile" style="width:${tw}px;left:${540 - tw / 2 + xx}px;transform:rotate(${r * (1 - m)}deg) scale(${(0.3 + 0.7 * v) * (1 - 0.6 * m)});opacity:${clamp(v, 0, 1) * (1 - m)}">${name}<small>${SC.small}</small></div>`;
+    });
+    if (SC.lock != null) {
+      const lk = back(P(SC.lock, 0.4)) * (1 - m), x0 = 540 + (0 - (N - 1) / 2) * sp - tw / 2 - 20;
+      h += `<div class="lock" style="left:${x0}px;top:330px;transform:scale(${lk}) rotate(-6deg);opacity:${clamp(lk, 0, 1)}">${SC.lockText}</div>`;
+    }
+  }
+  if (EDIT.cta && t >= EDIT.cta.t) {
+    const u = out((t - EDIT.cta.t) / 0.5);
+    h += `<div class="ctaband" style="opacity:${u}"></div><div class="cta" style="opacity:${u};transform:translateY(${30 * (1 - u)}px)">${EDIT.cta.html}</div>`;
+  }
+  $('#top').innerHTML = h;
+  // ---- captions ----
+  const cap = $('#cap'), ch = EDIT.chunks.find(c => t >= c.t0 && t < c.t1);
+  cap.className = mt >= 0 ? 'band' : '';
+  if (ch) {
+    cap.style.display = 'flex';
+    cap.innerHTML = ch.words.map(w => {
+      const on = t >= w.t0 && t < w.t1 + 0.02, age = t - w.t0;
+      const pop = age >= 0 && age < 0.18 ? 1 + 0.06 * Math.sin(Math.PI * age / 0.18) : 1;
+      return `<span class="${on ? 'on' : ''}" style="transform:scale(${pop.toFixed(3)});opacity:${age >= -0.02 ? 1 : 0.55}">${w.w}</span>`;
+    }).join('');
+  } else cap.style.display = 'none';
+  await document.fonts.ready;
+  return true;
+}
+window.seek = seek;
+</script>
+</body></html>
