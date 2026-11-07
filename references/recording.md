@@ -74,6 +74,6 @@ Read the image, then check:
 ## After recording
 ```
 tools/blend.sh footage/desk footage/desk30      # 60 -> 30 fps, 2-frame blend = natural motion blur
-tools/blend.sh footage/mob footage/mob30
+tools/blend.sh footage/mob footage/mob30 --crisp   # phone: no blend, or fast scrolls double the text
 ```
 Delete dry-run folders once the real take is in. Keep older takes only while a version is still being compared (each take is about 1–2 GB of JPEGs).

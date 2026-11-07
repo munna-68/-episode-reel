@@ -12,11 +12,13 @@
     accent: '#d6a56c', accentInk: '#1d120c',                       // chip fill + chip text, active caption word, script subtitle
     tile: '#f2ebe4', tileInk: '#24160f', tileSmall: '#4a2e20', lock: '#8f3418',
     capFont: 'Archivo', capStretch: '125%', capWeight: 900,        // captions + chips (wide display caps)
-    scriptFont: 'Yellowtail',                                       // subtitle under the chip
+    scriptFont: 'Yellowtail', subSize: '60px',                      // subtitle under the chip
+    capInk: '#fff', capOn: '', capSize: '66px', chipSize: '28px', ctaSize: '58px',                     // caption words / active word ('' = accent) / size
     bar: '#efe7df', barDots: '#d4c6b8', urlBg: '#e2d7cc', urlInk: '#6b5446', viewBg: '#1d120c',
   }, (typeof EDIT !== 'undefined' && EDIT.theme) || {});
   document.write(`<link href="${TH.fonts}" rel="stylesheet">`);
   const r = document.documentElement.style;
+  if (!TH.capOn) TH.capOn = TH.accent;
   for (const [k, v] of Object.entries(TH)) r.setProperty('--' + k, String(v));
 </script>
 <style>
@@ -40,8 +42,8 @@ body{font-family:var(--capFont),sans-serif;background:var(--bgOuter)}
 #bimg{position:absolute;left:0;top:0;width:1080px;height:1919px}
 /* top zone: one chip + script subtitle */
 .card{position:absolute;left:0;right:0;top:300px;text-align:center}
-.card b{display:inline-block;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:28px;letter-spacing:.01em;padding:11px 22px 12px;border-radius:999px;background:var(--accent);color:var(--accentInk)}
-.card .s{font-family:var(--scriptFont),cursive;font-size:60px;color:var(--accent);margin-top:12px;line-height:1.1}
+.card b{display:inline-block;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:var(--chipSize);letter-spacing:.01em;padding:11px 22px 12px;border-radius:999px;background:var(--accent);color:var(--accentInk)}
+.card .s{font-family:var(--scriptFont),cursive;font-size:var(--subSize);color:var(--accent);margin-top:12px;line-height:1.1}
 /* problem graphic: one link in bio -> separate platforms -> merge */
 .tile{position:absolute;top:350px;height:140px;border-radius:28px;background:var(--tile);color:var(--tileInk);display:flex;flex-direction:column;justify-content:center;align-items:center;font-stretch:118%;font-weight:900;font-size:32px;box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .tile small{font-stretch:100%;font-weight:600;font-size:19px;color:var(--tileSmall);margin-top:6px}
@@ -49,10 +51,10 @@ body{font-family:var(--capFont),sans-serif;background:var(--bgOuter)}
 .lock{position:absolute;padding:8px 16px;border-radius:999px;background:var(--lock);color:#fff;font-weight:800;font-size:20px;white-space:nowrap;box-shadow:0 10px 24px rgba(0,0,0,.4)}
 /* captions */
 #cap{position:absolute;left:70px;right:130px;top:1290px;display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;line-height:1.04}
-#cap span{display:inline-block;margin:0 19px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:66px;color:#fff;text-transform:uppercase;text-shadow:0 4px 0 rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.5);transform-origin:50% 70%}
-#cap span.on{color:var(--accent)}
+#cap span{display:inline-block;margin:0 19px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:var(--capSize);color:var(--capInk);text-transform:uppercase;text-shadow:0 4px 0 rgba(0,0,0,.45),0 10px 30px rgba(0,0,0,.5);transform-origin:50% 70%}
+#cap span.on{color:var(--capOn)}
 #cap.band{padding:16px 6px;border-radius:40px;background:color-mix(in srgb,var(--bgOuter) 82%,transparent)}
-.cta{position:absolute;left:50px;right:140px;top:250px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:58px;color:#fff;text-align:center;line-height:1.1;text-shadow:0 6px 30px rgba(0,0,0,.6)}
+.cta{position:absolute;left:50px;right:140px;top:250px;font-stretch:var(--capStretch);font-weight:var(--capWeight);font-size:var(--ctaSize);color:#fff;text-align:center;line-height:1.1;text-shadow:0 6px 30px rgba(0,0,0,.6)}
 .cta em{font-style:normal;color:var(--accent)}
 .ctaband{position:absolute;left:0;right:0;top:0;height:640px;background:linear-gradient(color-mix(in srgb,var(--bgOuter) 92%,transparent),color-mix(in srgb,var(--bgOuter) 88%,transparent) 62%,transparent)}
 </style></head>

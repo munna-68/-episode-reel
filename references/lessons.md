@@ -27,6 +27,11 @@ What the user rejected, in their words, and what fixed it. Read this before plan
 ## v4 → approved
 63 s total. Everything from the first click onward was unchanged from v2. Start new episodes from v4's shape.
 
+## Episode 2: a look per client
+- "Can you make the background, the fonts… suit this particular website? It shouldn't be the same for every episode." → Each episode gets its own theme from the client's colours and type (ep 2: crimson studio, butter chips, condensed Archivo caps, DM Mono subtitles). Only the layout stays fixed.
+- The phone take's scroll to the footer showed text as a double image: the 2-frame blend at ~1000 px/s. Fix: `blend.sh … --crisp` for the phone, and one even `scrollPath` instead of a long final sine scroll.
+- A beat the voice names ("fully booked") needs about 1.5 s on screen with the cursor on it, so the follow-zoom actually frames it before the next move.
+
 ## Working style they asked for
 - Short, decision-oriented messages; when asking, give options and a pick.
 - Ask before creative commitments: script, music, stills. Don't ask about things already settled above.

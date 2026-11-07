@@ -2,7 +2,7 @@
 
 The compositor is frame-pure: `seek(k)` draws output frame k. Output time equals take time, with no remapping.
 
-## Layout (1080x1920, the series look; keep it)
+## Layout (1080x1920; the layout is fixed across the series, the colours and fonts are per client)
 - **Desktop window:** left 20, top 560, 1040 wide. A 34 px browser bar with a fake address (`domain` + the slug for the current page), then a 650 px view. It never moves or resizes, and nothing animates in on cuts.
 - **Top zone (y 220–540):** one chip plus a script subtitle at a time (cards), or the problem graphic, or the CTA.
 - **Captions:** top 1290, Archivo wide caps 66 px, the active word in the accent colour, max 4 words per chunk. Over the phone they get a dark band.
@@ -25,7 +25,7 @@ A number (`4.2`), a take mark (`"hover-0.2"`, `"navShop+1.0"`), a voice line (`"
               "lock": {"at": "line:03+2.5", "text": "🔒 make an account"}},   // lock is optional
   "cta": {"at": "line:12", "html": "Drop a business <em>below</em><br>for episode 3 👇"},
   "stitch": {"k0": 70, "k1": 83, "a": 69, "b0": 81, "b1": 83, "ox": 330, "oy": 458, "zmax": 12},  // optional
-  "theme": {},                                       // {} = series look; see below
+  "theme": {...},                                    // per-client look (required); {} = ep 1 espresso look
   "music": {"style": "deep", "bpm": 104},
   "sfx": {"transitions": ["click", "navShop"], "boom": 2.3, "keys": [{"at": "type+0.02", "n": 5}],
           "thock": ["add+0.05"], "ticks": [{"at": "navDash+1.5", "n": 16}]}
@@ -48,16 +48,18 @@ To cover a short glitch in the take, use output frame numbers (30 fps). Desk30 f
 - `b0`→`b1`: the frames it dissolves into.
 - Keep `k1 − k0` around 13 frames (0.43 s) so real time barely shifts.
 
-### Theme (stills checkpoint option B)
+### Theme (every episode: built from the client's site)
 Keys, with the defaults shown in `comp/one.html`:
 - `fonts` (a Google Fonts CSS URL, `display=block`)
 - `bgInner`, `bgMid`, `bgOuter` (the radial studio background: keep it dark so the light site window pops)
 - `accent`, `accentInk` (chip fill and text, active caption word, script subtitle, click ripple)
-- `capFont`, `capStretch`, `capWeight`, `scriptFont`
+- `capFont`, `capStretch`, `capWeight`, `capSize` (66px), `capInk` (caption words), `capOn` (active word; defaults to `accent`), `scriptFont`, `subSize` (60px; use about 38px for a mono font)
 - `tile`, `tileInk`, `tileSmall`, `lock`
 - `bar`, `barDots`, `urlBg`, `urlInk`, `viewBg`
 
-Derive them from `brief/brand.json`: a dark brand colour for the background, the warm or bright accent for `accent`, and the brand's display font if it is on Google Fonts. Contrast check: `accent` on `bgMid` must be readable at 60 px.
+- `chipSize` (28px), `ctaSize` (58px)
+
+How to derive each key from the client's site is in SKILL.md → step 5, "Design this episode's look". Never reuse another episode's theme. Contrast check: captions, the spoken word and the subtitle must read at phone size over `bgMid`. Example: `assets/examples/ep2/edit.json`.
 
 ## Building and checking
 ```

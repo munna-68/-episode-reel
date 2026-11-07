@@ -1,0 +1,171 @@
+{
+  "domain": "kensalbakes.com",
+  "urls": [
+    [
+      0,
+      ""
+    ],
+    [
+      "menu",
+      "/menu"
+    ],
+    [
+      "cupcakes",
+      "/menu?tab=cupcakes"
+    ],
+    [
+      "cakes",
+      "/menu?tab=cakes"
+    ],
+    [
+      "order",
+      "/order"
+    ],
+    [
+      "dash",
+      "/dashboard"
+    ]
+  ],
+  "xf": 0.4,
+  "zooms": [
+    {
+      "from": "croissant-0.9",
+      "to": "cookie+1.0",
+      "zoom": 1.3
+    },
+    {
+      "from": "hoverMenu-0.9",
+      "to": "hoverOrder+0.8",
+      "zoom": 1.6
+    },
+    {
+      "from": "cupcakes-0.7",
+      "to": "cakes+0.9",
+      "zoom": 1.35
+    },
+    {
+      "from": "pickCookies-0.7",
+      "to": "cont2+0.5",
+      "zoom": 1.4
+    },
+    {
+      "from": "nextMonth-0.7",
+      "to": "footer-2.1",
+      "zoom": 1.6
+    }
+  ],
+  "cards": [
+    {
+      "from": 0.25,
+      "to": "line:03-0.3",
+      "chip": "EPISODE 2",
+      "sub": "Kensal Bakes"
+    },
+    {
+      "from": "line:04",
+      "to": "line:05-0.25",
+      "chip": "ONE HOME",
+      "sub": "browse, then order"
+    },
+    {
+      "from": "line:05",
+      "to": "navMenu+1.0",
+      "chip": "EVERY BAKE",
+      "sub": "demo prices"
+    },
+    {
+      "from": "navMenu+1.0",
+      "to": "navOrder+1.0",
+      "chip": "THE MENU",
+      "sub": "cookies, cupcakes, cakes"
+    },
+    {
+      "from": "navOrder+1.0",
+      "to": "cont2+0.2",
+      "chip": "THE ORDER FORM",
+      "sub": "every detail, one go"
+    },
+    {
+      "from": "cont2+0.45",
+      "to": "navDash+1.0",
+      "chip": "HER RULES",
+      "sub": "built into the calendar"
+    },
+    {
+      "from": "navDash+1.0",
+      "to": "cut",
+      "chip": "DASHBOARD",
+      "sub": "demo numbers"
+    },
+    {
+      "from": "cut+0.1",
+      "to": "cut+2.6",
+      "chip": "ON A PHONE",
+      "sub": "same site, same feel"
+    }
+  ],
+  "scatter": {
+    "from": "line:03",
+    "merge": "line:04",
+    "pill": "💌 DM to order",
+    "tiles": [
+      "Flavours?",
+      "How many?",
+      "Which date?"
+    ],
+    "small": "another DM"
+  },
+  "cta": {
+    "at": "line:12",
+    "html": "Drop a business <em>below</em><br>for episode 3 👇"
+  },
+  "theme": {
+    "fonts": "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=DM+Mono:wght@400;500&display=block",
+    "bgInner": "#9a1f22",
+    "bgMid": "#6a1114",
+    "bgOuter": "#2c0708",
+    "accent": "#f4eec6",
+    "accentInk": "#931c1f",
+    "tile": "#fcf9ea",
+    "tileInk": "#2b1f1a",
+    "tileSmall": "#8d766a",
+    "lock": "#6b554c",
+    "capFont": "Archivo",
+    "capStretch": "66%",
+    "capWeight": 800,
+    "capSize": "86px",
+    "capInk": "#fcf9ea",
+    "capOn": "#e8b24a",
+    "scriptFont": "DM Mono",
+    "subSize": "44px",
+    "bar": "#fcf9ea",
+    "barDots": "#ddcaa6",
+    "urlBg": "#efe3c8",
+    "urlInk": "#6b554c",
+    "viewBg": "#6b554c",
+    "chipSize": "38px",
+    "ctaSize": "78px"
+  },
+  "music": {
+    "style": "warm",
+    "bpm": 96
+  },
+  "sfx": {
+    "transitions": [
+      "navMenu",
+      "navOrder",
+      "navDash"
+    ],
+    "boom": 3.4,
+    "thock": [
+      "cont2+0.05"
+    ],
+    "ticks": [
+      {
+        "at": 0.2,
+        "n": 24,
+        "gap": 0.1
+      }
+    ]
+  }
+}

@@ -57,7 +57,7 @@ zsh <this skill's folder>/scripts/new_episode.sh        # -> reel-episode-N/ wit
 
 ### 1. Study the site (no checkpoint)
 - Read the repo's markdown first: problem, talking points, "what's fake". Then read the routes and components you'll show. Note each real interaction (hover states, transitions, filters, toggles) and exactly what it does.
-- Run `python3 tools/brand_tokens.py <repo> --out brief/brand.json` for colours and fonts (used by the theme in step 5).
+- Run `python3 tools/brand_tokens.py <repo> --out brief/brand.json` for colours and fonts. Step 5 designs the episode's look from these, so note the site's display face, body face and signature colour fields too.
 - Note anything that will look glitchy on camera: preloader artifacts, scroll-reveal content that a filter pulls into view before it has faded in, nav that hides on scroll. `references/recording.md` lists the known patterns and fixes.
 
 ### 2. Script ✅ checkpoint
@@ -87,15 +87,26 @@ Details are in `references/recording.md`. In short:
 1. Write `shots/desktop.mjs`: one continuous real-time take at 1440x900, paced with `r.until(sec)` to the voice beats. `assets/examples/ep1/desktop.mjs` is a worked example.
 2. Write `shots/mobile.mjs`: one continuous phone take, about 14 s.
 3. Dry-run with `--dry` and look at contact sheets. Fix pacing until nothing is late and nothing parks.
-4. Record for real in the background, then run `tools/blend.sh footage/desk footage/desk30` (and the same for `mob`).
+4. Record for real in the background, then run `tools/blend.sh footage/desk footage/desk30` and `tools/blend.sh footage/mob footage/mob30 --crisp`.
 5. Re-place the voice to the real marks, then write `edit.json` (`references/edit.md`; ep 1's is in `assets/examples/ep1/edit.json`).
 6. Run `python3 tools/build_edit.py` and `node tools/render.mjs stills <frames…>`. Pick 5–6 frames: the hook, the problem graphic, a zoom, a page transition, the dashboard or shop, and the phone with the CTA.
 
-Send the stills to the user, tiled into one or two contact sheets. Ask about the look:
-- **(A) the series look**, the same as ep 1 (espresso studio, caramel chips, Archivo wide caps, Yellowtail script). This is the default and keeps the series recognisable.
-- **(B) tinted to this client's brand** (theme keys in `edit.json`).
+#### Design this episode's look (before the stills)
+Every episode gets its own look, designed to complement the client's web design, so the reel feels like part of their site. Only the **layout** stays fixed across the series: window size and position, the top zone, captions under the window, the phone at the end. The **look** changes every episode: background, chip colours, caption font and colours, subtitle font, window chrome. Never carry over a previous episode's theme. Ep 1's espresso/caramel/Yellowtail look belongs to ep 1 only, and it is just the compositor's fallback when `theme` is empty.
 
-Give your pick.
+Set `edit.json` → `theme` from `brief/brand.json` and from what you saw on the site:
+- **Background** (`bgInner`, `bgMid`, `bgOuter`): a deep, saturated version of the site's signature colour field (its hero, a colour band or the footer), darkest at the edges. The light site window has to stand out, so if that colour matches the site's own hero and the window edge would vanish, use the next brand colour or go darker.
+- **Chips** (`accent`, `accentInk`): copy the site's own button or badge colour pairing.
+- **Captions** (`capFont`, `capStretch`, `capWeight`, `capSize`): the site's display face, set the way the site sets it (condensed poster caps, a wide grotesque, a serif…). Raise `capSize` for condensed faces (ep 2: 86 px) so the captions keep their presence.
+- **Caption colours** (`capInk`, `capOn`): the site's light text colour for the words, and a brand accent for the spoken word that stands out from both the words and the background.
+- **Subtitle** (`scriptFont`, `subSize`): the site's second typeface (its body mono, serif or script). Mono and serif faces want about 38–44 px; scripts about 60 px.
+- **Sizes** (`chipSize`, `ctaSize`): raise them when a condensed face makes the chips and the CTA look small (ep 2: 38 px and 78 px).
+- **Window chrome** (`bar`, `barDots`, `urlBg`, `urlInk`, `viewBg`): the site's paper and line tones.
+- **Fonts:** load every face in `fonts` (a Google Fonts URL with `display=block`). If the site's font isn't on Google Fonts, pick the closest one that is and say so.
+
+Before rendering stills, check contrast: captions and subtitles must read at phone size over `bgMid`, and the spoken word must clearly stand out. Worked example: `assets/examples/ep2/edit.json` (Kensal Bakes, a bark/crimson/butter poster site): crimson studio from the site's red band, butter chips with crimson text like its buttons, condensed Archivo 800 captions like its hero, cream words with a gold spoken word, DM Mono subtitles like its body copy.
+
+Send the stills to the user, tiled into one or two contact sheets. Say in one line where the look comes from (for example "crimson from the site's red band, condensed caps like its hero"), then ask for approval or tweaks.
 
 ### 6. Render and deliver
 ```
@@ -120,12 +131,14 @@ Expect a round or two. Keep each fix surgical. Re-record only the take that chan
 - **A fast hook.** Scroll continuously at roughly 500 px/s, never stop and go, never let the mouse sit idle. The user called a 27 s run-up "way too slow" and a 14 s one good.
 - **Story over details.** Cover the problem, what was built and why it sells. Never narrate colours, fonts or micro-effects.
 - **Hide the site's own glitches without touching it.** Frame them out with the zoom, browse first so content has faded in, or stitch over a few frames.
-- **Captions:** word by word, wide caps, active word in the accent colour, under the window. In the top zone, one chip plus a script subtitle at a time.
+- **Captions:** word by word, under the window, active word highlighted. In the top zone, one chip plus a subtitle at a time.
+- **A look that belongs to the client.** Background, fonts and colours come from their site (step 5), so each episode looks different while the layout stays the same.
 
 ## Files in this skill
 - `scripts/`: every tool, copied into each episode's `tools/` by `new_episode.sh`. Each one has usage at the top.
 - `assets/comp/one.html`: the compositor (themeable).
 - `assets/examples/ep1/`: Episode 1's shot lists, `lines.json`, `starts.json` and `edit.json`.
+- `assets/examples/ep2/edit.json`: Episode 2's edit, with a full client-derived `theme` (the model for step 5).
 - `references/script.md`: script structure, the ep 1 script, how to write one from the repo.
 - `references/recording.md`: the recorder API, pacing, the dry-run loop, glitch patterns, the phone take.
 - `references/edit.md`: the `edit.json` schema, time expressions, zooms, cards, theme, stitch, voice placement, audio.
